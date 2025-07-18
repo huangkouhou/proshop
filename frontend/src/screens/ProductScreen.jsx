@@ -1,15 +1,25 @@
 import { useParams } from "react-router-dom"; //useParams() 会读取 URL 里的参数，params.id 就是URL 里的参数
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Row, Col, Image, ListGroup, Card, Button } from 'react-bootstrap';
 
 import Rating from '../components/Rating';
-import products from "../products";
+import axios from "axios";
 
 const ProductScreen = () => {
+  const [ product, setProduct ] = useState({});
+
   const { id:productId } = useParams();
-  const product = products.find((p) => p._id === productId); //find() 会在数组里查找第一个符合条件的商品
 
+  useEffect(() => {
+    const fetchProduct = async () => {
+        const { data } = await axios.get(`/api/products/${productId}`);
+        setProduct(data);
+    }
 
+    fetchProduct();
+  }, [productId]);//如果写 [productId]每当 URL 中的 productId 变化时，useEffect 会重新运行，这样就能加载新商品的数据。
+  
   return (
   <>
     <Link className='btn btn-light my-3' to='/'>
