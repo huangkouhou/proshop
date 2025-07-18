@@ -1,0 +1,31 @@
+{
+  "name": "ecommerce-platform",
+  "version": "1.0.0",
+  "description": "eCommerce application build with the MERN stack",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "server": "nodemon backend/server.js",
+    "client": "npm start --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huangkouhou/proshop.git"
+  },
+  "author": "Peng Huang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/huangkouhou/proshop/issues"
+  },
+  "homepage": "https://github.com/huangkouhou/proshop#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "dotenv": "^17.2.0",
+    "nodemon": "^3.1.10"
+  }
+}
