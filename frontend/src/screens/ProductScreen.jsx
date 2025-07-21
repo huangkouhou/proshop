@@ -2,6 +2,8 @@ import { useParams } from "react-router-dom"; //useParams() 会读取 URL 里的
 import { Link } from 'react-router-dom';
 import { Row, Col, Image, ListGroup, Card, Button } from 'react-bootstrap';
 import Rating from '../components/Rating';
+import Loader from "../components/Loader";
+import Message from "../components/Message";
 import { useGetProductDetailsQuery } from "../slices/productsApiSlice";
 
 // import { useState, useEffect } from 'react';
@@ -25,11 +27,11 @@ const { data: product, isLoading, error } = useGetProductDetailsQuery(productId)
 
 
 if (isLoading) {
-return <h2>Loading...</h2>;
+return <Loader/>
 }
 
 if (error) {
-return <div>{ error?.data?.message || error.error }</div>;
+return <Message variant='danger'>{ error?.data?.message || error.error }</Message>;
 }
 
 return (
