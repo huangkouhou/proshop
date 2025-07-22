@@ -15,6 +15,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import HomeScreen from './screens/HomeScreen';
 import ProductScreen from './screens/ProductScreen';
+import CartScreen from './screens/CartScreen';
 
 
 const router = createBrowserRouter(
@@ -22,6 +23,7 @@ const router = createBrowserRouter(
     <Route path='/' element={<App />}>
       <Route index={true} path='/' element={<HomeScreen />}/>     {/*index={true} 就是告诉路由如果访问父路由 /，默认展示 HomeScreen*/}
       <Route path='/product/:id' element={<ProductScreen />}/>
+      <Route path='/cart' element={<CartScreen />}/>
     </Route>
   )
 )

@@ -25,10 +25,17 @@ const cartSlice = createSlice({
             }
 
             return updateCart(state);
-        }
+        },
+
+        removeFromCart: (state, action) => {
+            //action.payload传进来的商品 _id（要删除的商品 ID）,state.cartItems.filter()遍历购物车，保留所有不是这个 ID 的商品
+            state.cartItems = state.cartItems.filter((x) => x._id !== action.payload);
+            
+            return updateCart(state);
+        },
     },
 });
 
-export const { addToCart } = cartSlice.actions;
+export const { addToCart, removeFromCart } = cartSlice.actions;
 
 export default cartSlice.reducer; //追加到Redux 的全局状态管理 store.js
