@@ -12,11 +12,17 @@ import {
     updateUser,
 } from "../controllers/userController.js";
 
+// 注册 + 获取用户列表
 router.route('/').post(registerUser).get(getUsers);
-router.route('/logout', logoutUser);
-router.route('login', authUser);
-router.route('/profile').get(getUserProfile).put(updateUserProfile);
-router.route('/:id').delete(deleteUser).get(getUserByID).put(updateUser);
 
+// 登录 + 登出
+router.post('/login', authUser);
+router.post('/logout', logoutUser);
+
+// 获取和更新当前登录用户信息
+router.route('/profile').get(getUserProfile).put(updateUserProfile);
+
+// 管理用户 by ID
+router.route('/:id').delete(deleteUser).get(getUserByID).put(updateUser);
 
 export default router;
