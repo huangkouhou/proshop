@@ -11,18 +11,19 @@ import {
     getUserByID,
     updateUser,
 } from "../controllers/userController.js";
+import { protect, admin } from '../middleware/authMiddleware.js';
 
-// 注册 + 获取用户列表
-router.route('/').post(registerUser).get(getUsers);
+// 注册 + 获取用户列表 admin
+router.route('/').post(registerUser).get(protect, admin, getUsers);
 
 // 登录 + 登出
-router.post('/login', authUser);
+router.post('/auth', authUser);
 router.post('/logout', logoutUser);
 
 // 获取和更新当前登录用户信息
-router.route('/profile').get(getUserProfile).put(updateUserProfile);
+router.route('/profile').get(protect, getUserProfile).put(protect, updateUserProfile);
 
-// 管理用户 by ID
-router.route('/:id').delete(deleteUser).get(getUserByID).put(updateUser);
+// 管理用户 by ID admin
+router.route('/:id').delete(protect, admin, deleteUser).get(protect, admin, getUserByID).put(protect, admin, updateUser);
 
 export default router;
