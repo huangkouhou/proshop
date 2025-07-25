@@ -87,7 +87,9 @@ const CartScreen = () => {
                     type='button' 
                     className='btn-block'
                     disabled={cartItems.length === 0}
-                    onClick={}
+            
+
+                    
                     >
                         Proceed To Checkout
                     </Button>
