@@ -14,10 +14,14 @@ const authSlice = createSlice({
         setCredentials: (state, action) => {
             state.userInfo = action.payload;//把服务器返回的用户信息（在 action.payload 里）写入到 Redux 的 state 中。
             localStorage.setItem('userInfo', JSON.stringify(action.payload));//把用户信息也同步写入 localStorage，用于持久保存。这样即使刷新页面也能保留登录状态。
-        }
-    }
+        },
+        logout: (state,action) => {
+            state.userInfo = null;
+            localStorage.removeItem('userInfo');
+        },
+    },
 });
 
-export const { setCredentials } = authSlice.actions;
+export const { setCredentials, logout } = authSlice.actions;
 
 export default authSlice.reducer;

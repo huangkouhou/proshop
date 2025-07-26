@@ -10,11 +10,16 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
-        
+        logout: builder.mutation({
+            query: (data) => ({
+                url:`${USERS_URL}/logout`,
+                method: 'POST',
+            }),
+        }),
     }),
 });
 
-export const { useLoginMutation } = usersApiSlice;
+export const { useLoginMutation, useLogoutMutation } = usersApiSlice;
 
 //RTK Query 提供的 内建函数
 // | 方法名        | 说明                    | 例子           |

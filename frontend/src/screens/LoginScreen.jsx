@@ -76,10 +76,12 @@ const LoginScreen = () => {
             { isLoading && <Loader /> }
 
        </Form>
+
+      {/*当用户尚未注册时，引导他们跳转到注册页，并在 URL 中携带一个 redirect 参数，方便注册成功后重定向回原先想去的页面。*/}
         <Row className="py-3">
             <Col>
-              New Customer? <Link to={ redirect ? `/register?redirect=$
-              {redirect}`: '/register' }>Register</Link>
+              New Customer? <Link to={ redirect ? `/register?redirect=${redirect}` : '/register' }>
+              Register</Link>
             </Col>
         </Row>
 
