@@ -4,18 +4,20 @@ import { Form, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux"; //useSelector访问 Redux 中的状态
 import FormContainer from "../components/FormContainer";
 import Loader from '../components/Loader';
-import { useLoginMutation } from "../slices/usersApiSlice";
+import { useRegisterMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
-import { toast } from 'react-toastify';
+import { toast } from 'react-toastify'; //使用 toast 弹窗提醒
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState(''); 
+  const [confirmPassword, setConfirmPassword] = useState(''); 
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [ login, { isLoading }] = useLoginMutation();//isLoading 是由 RTK Query 提供的一个 状态标志（boolean），表示当前请求（比如 login）是否正在进行中。
+  const [ register, { isLoading }] = useRegisterMutation();//isLoading 是由 RTK Query 提供的一个 状态标志（boolean），表示当前请求（比如 login）是否正在进行中。
 
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -34,20 +36,37 @@ const LoginScreen = () => {
 
   const submitHandler = async(e) => {
     e.preventDefault();
-    try{
-        const res = await login({email, password}).unwrap();//异步 mutation 调用，会发出网络请求。unwrap如果请求成功，就直接返回真正的响应数据（通常是 res.data 的内容
-        dispatch(setCredentials( ...res));
+    if (password !== confirmPassword){
+      toast.error('Passwords do not match');
+      return;
+    } else {
+      try{
+        const res = await register({name, email, password}).unwrap();//异步 mutation 调用，会发出网络请求。unwrap如果请求成功，就直接返回真正的响应数据（通常是 res.data 的内容
+        dispatch(setCredentials(...res));
         navigate(redirect);
     } catch (err){
         toast.error(err?.data?.message || err.error);
     }
+
+    }
+
   }
 
   return (
     <FormContainer>
-       <h1>Sign In</h1>
+       <h1>Sign Up</h1>
 
        <Form onSubmit={submitHandler}>
+            <Form.Group controlId='name' className="my-3"> 
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  type='text'
+                  placeholder='Enter email'
+                  value={name}
+                  onChange={(e) => setName(e.target.value)} 
+                ></Form.Control>
+            </Form.Group>
+
             <Form.Group controlId='email' className="my-3"> 
                 <Form.Label>Email Address</Form.Label>
                 <Form.Control
@@ -68,9 +87,19 @@ const LoginScreen = () => {
                 ></Form.Control>
             </Form.Group>
 
+            <Form.Group controlId='confirmPassword' className="my-3"> 
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control
+                  type='password'
+                  placeholder='Confirm password'
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)} 
+                ></Form.Control>
+            </Form.Group>
+
             <Button type='submit' variant="primary" className="mt-2"
             disabled={ isLoading }> 
-                Sign In
+                Register
             </Button>
 
             { isLoading && <Loader /> }
@@ -80,8 +109,9 @@ const LoginScreen = () => {
       {/*当用户尚未注册时，引导他们跳转到注册页，并在 URL 中携带一个 redirect 参数，方便注册成功后重定向回原先想去的页面。*/}
         <Row className="py-3">
             <Col>
-              New Customer? <Link to={ redirect ? `/register?redirect=${redirect}` : '/register' }>
-              Register</Link>
+              Already have an account? {}
+              <Link to={ redirect ? `/login?redirect=${redirect}` : '/login' }>
+              Login</Link>
             </Col>
         </Row>
 
@@ -90,7 +120,7 @@ const LoginScreen = () => {
   )
 }
 
-export default LoginScreen;
+export default RegisterScreen;
 
 
 // const location = useLocation();
