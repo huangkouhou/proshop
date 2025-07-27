@@ -36,7 +36,7 @@ const LoginScreen = () => {
     e.preventDefault();
     try{
         const res = await login({email, password}).unwrap();//异步 mutation 调用，会发出网络请求。unwrap如果请求成功，就直接返回真正的响应数据（通常是 res.data 的内容
-        dispatch(setCredentials( ...res));
+        dispatch(setCredentials(res));
         navigate(redirect);
     } catch (err){
         toast.error(err?.data?.message || err.error);
