@@ -3,7 +3,8 @@ import { updateCart } from "../utils/cartUtils";
 
 //初始化购物车状态,判断本地浏览器 localStorage 里有没有 cart 数据,有就用本地缓存数据（防止刷新丢失购物车）,没有就初始化成空购物车 { cartItems: [] }
 const initialState = localStorage.getItem("cart") ? JSON.parse
-(localStorage.getItem("cart")):{cartItems: []};
+(localStorage.getItem("cart"))
+:{cartItems: [], shippingAddress: {}, paymentMethod: 'PayPal'};
 
 
 
@@ -33,9 +34,14 @@ const cartSlice = createSlice({
             
             return updateCart(state);
         },
+
+        saveShippingAddress: (state, action) => {
+            state.shippingAddress = action.payload;
+            return updateCart(state);
+        },
     },
 });
 
-export const { addToCart, removeFromCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, saveShippingAddress } = cartSlice.actions;
 
 export default cartSlice.reducer; //追加到Redux 的全局状态管理 store.js
