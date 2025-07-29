@@ -45,9 +45,20 @@ const cartSlice = createSlice({
             return updateCart(state);
         },
 
+        clearCartItems: (state) => {
+            state.cartItems = [];
+            return updateCart(state);
+        },
+
     },
 });
 
-export const { addToCart, removeFromCart, saveShippingAddress, savePaymentMethod } = cartSlice.actions;
+export const { 
+    addToCart, 
+    removeFromCart, 
+    saveShippingAddress, 
+    savePaymentMethod,
+    clearCartItems, 
+} = cartSlice.actions;
 
 export default cartSlice.reducer; //追加到Redux 的全局状态管理 store.js
