@@ -4,7 +4,7 @@ const orderSchema = mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: "User",
+        ref: "User", // 引用 User 模型
     },
     orderItems: [
     {
@@ -22,7 +22,7 @@ const orderSchema = mongoose.Schema({
     shippingAddress: {
         address: { type: String, required: true },
         city: { type: String, required: true },
-        postCode: { type: String, required: true },
+        postalCode: { type: String, required: true },
         country: { type: String, required: true },
     },
     paymentMethod: {

@@ -11,7 +11,7 @@ const protect = asyncHandler(async (req, res, next) => {
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
-    token = req.headers.authorization.split(' ')[1];
+    token = req.headers.authorization.split(' ')[1];//从请求头中提取 JWT（JSON Web Token）字符串的“具体值”部分。拿第二部分（也就是 token 本体）赋值给 token
   } else if (req.cookies.jwt) {
     token = req.cookies.jwt;
   }
