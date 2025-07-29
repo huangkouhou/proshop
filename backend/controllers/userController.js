@@ -10,6 +10,8 @@ const authUser = asyncHandler(async(req, res) => {
 
     const user = await User.findOne({ email });
 
+    const token = generateToken(res, user._id);  // ✅ 把 token 接出来
+
     if (user && (await user.matchPassword(password))) {
         generateToken(res, user._id);
 
@@ -17,7 +19,8 @@ const authUser = asyncHandler(async(req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
-            isAdmin: user.isAdmin
+            isAdmin: user.isAdmin,
+            token
         });
     } else {
         res.status(401);
@@ -117,6 +120,7 @@ const updateUserProfile = asyncHandler(async(req, res) => {
             name: updatedUser.name,
             email: updatedUser.email,
             isAdmin: updatedUser.isAdmin,
+            token: generateToken(user._id), // ← 返回 token
         });
 
   } else {
