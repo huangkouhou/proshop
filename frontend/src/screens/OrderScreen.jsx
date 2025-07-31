@@ -64,9 +64,9 @@ const OrderScreen = () => {
   }, [order, paypal, paypalDispatch, loadingPayPal, errorPayPal]);
 
   function onApprove(data, actions) {
-    return actions.order.capture().then(async function(details){
+    return actions.order.capture().then(async function(details){ //details 是 PayPal 自动传入的
         try {
-          await payOrder({ orderId, details });
+          await payOrder({ orderId, details }); //PayPal 成功付款的结果传给后端，让订单状态变成“已支付”，payOrder mutation 函数用来调用某个后端接口。
           refetch();
           toast.success('Payment Successful');
         } catch(err) {
@@ -75,18 +75,18 @@ const OrderScreen = () => {
     });
   }
 
-  async function onApproveTest() {
-    await payOrder({ orderId, details: {payer: {} } });
-        refetch();
-        toast.success('Payment Successful');
-  }
+//   async function onApproveTest() {
+//     await payOrder({ orderId, details: {payer: {} } });
+//         refetch();
+//         toast.success('Payment Successful');
+//   }
 
   function onError(err) {
     toast.error(err.message);
   }
 
   function createOrder(data, actions) {
-    return actions.order.create({
+    return actions.order.create({ //PayPal JS SDK 提供的方法
         purchase_units: [
             {
                 amount: {
@@ -95,7 +95,7 @@ const OrderScreen = () => {
             },
         ],
     }).then((orderId) => {
-        return orderId;
+        return orderId;//PayPal 创建完订单后会返回一个 订单 ID，你需要把这个 ID 返回给 PayPal，它会记录并用于后续付款流程。
     });
   }
 
