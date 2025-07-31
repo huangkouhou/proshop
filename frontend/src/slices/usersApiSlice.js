@@ -26,10 +26,26 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 method: 'POST',
             }),
         }),
+
+        profile: builder.mutation({
+            query: (data) => ({
+                url:`${USERS_URL}/profile`,
+                method: 'PUT',
+                body: data,
+            }),
+        }),
+
+
     }),
 });
 
-export const { useLoginMutation, useLogoutMutation, useRegisterMutation } = usersApiSlice;
+export const { 
+    useLoginMutation, 
+    useLogoutMutation, 
+    useRegisterMutation,
+    useProfileMutation 
+
+} = usersApiSlice;
 
 //RTK Query 提供的 内建函数
 // | 方法名        | 说明                    | 例子           |
