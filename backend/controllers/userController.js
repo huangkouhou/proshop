@@ -13,7 +13,7 @@ const authUser = asyncHandler(async(req, res) => {
 //  const token = generateToken(res, user._id);  // ❌ user 可能是 null，就已经调用了。如果 user 是 null，这里就会报错
 
     if (user && (await user.matchPassword(password))) {
-        generateToken(res, user._id); // ✅ 现在可以安全调用了
+        const token = generateToken(res, user._id); // ✅ 现在可以安全调用了
 
         res.status(200).json({
             _id: user._id,
