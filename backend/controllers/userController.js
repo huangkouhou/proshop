@@ -10,10 +10,10 @@ const authUser = asyncHandler(async(req, res) => {
 
     const user = await User.findOne({ email });
 
-    const token = generateToken(res, user._id);  // ✅ 把 token 接出来
+//  const token = generateToken(res, user._id);  // ❌ user 可能是 null，就已经调用了。如果 user 是 null，这里就会报错
 
     if (user && (await user.matchPassword(password))) {
-        generateToken(res, user._id);
+        generateToken(res, user._id); // ✅ 现在可以安全调用了
 
         res.status(200).json({
             _id: user._id,
@@ -120,7 +120,8 @@ const updateUserProfile = asyncHandler(async(req, res) => {
             name: updatedUser.name,
             email: updatedUser.email,
             isAdmin: updatedUser.isAdmin,
-            token: generateToken(user._id), // ← 返回 token
+            token: generateToken(res, user._id),// ✅ 正确做法：传入 res 设置 cookie
+
         });
 
   } else {
