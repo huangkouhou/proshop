@@ -95,15 +95,36 @@ const updateOrderToPaid = asyncHandler(async(req, res) => {
 //@route PUT /api/orders/:id/delivered
 //@access Private/Admin
 const updateOrderToDelivered = asyncHandler(async(req, res) => {
-    res.send('update order to delivered');
+    const order = await Order.findById(req.params.id);
+    if (order) {
+        order.isDelivered = true;
+        order.deliveredAt = Date.now();
+
+        const updatedOrder = await order.save();
+
+        res.status(200).json(updatedOrder);
+    } else {
+        res.status(404);
+        throw new Error('Order not found');
+    }
 });
 
 //@desc Get all orders
 //@route Get /api/orders
 //@access Private/Admin
 const getOrders = asyncHandler(async(req, res) => {
-    res.send('get all orders');
+    const orders = await Order.find({})      // 查询所有订单
+    .populate('user', 'name');            // 联表查询，获取每笔订单关联的用户的 id 和 name 字段
+    res.status(200).json(orders);
 });
+
+
+//populate 是 Mongoose 提供的一个非常强大的方法，用于在查询时自动填充引用（ref）字段所关联的文档内容。
+// 简单来说，它让你在查询一个文档的同时，把它关联的其他文档内容也“带出来”。
+// .populate({
+//   path: 'user',
+//   select: '_id name'
+// });
 
 
 export {
@@ -112,5 +133,6 @@ export {
     getOrderById,
     updateOrderToPaid,
     updateOrderToDelivered,
-    getOrders
+    getOrders,
+
 };

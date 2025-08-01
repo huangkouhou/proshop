@@ -9,7 +9,8 @@ import Loader from '../components/Loader';
 import { 
     useGetOrderDetailsQuery, 
     usePayOrderMutation, 
-    useGetPayPalClientIdQuery 
+    useGetPayPalClientIdQuery,
+    useDeliverOrderMutation, 
 } from '../slices/ordersApiSlice';
 
 
@@ -26,6 +27,8 @@ const OrderScreen = () => {
 
   //payOrder：是一个函数，调用它就会发起支付请求 PUT /api/orders/:id/pay
   const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
+
+  const [deliverOrder, {isLoading: loadingDeliver}] = useDeliverOrderMutation();
 
   //专门用于控制和读取 PayPal JS SDK 的加载状态。
   const [{ isPending }, paypalDispatch ] = usePayPalScriptReducer();
@@ -98,6 +101,17 @@ const OrderScreen = () => {
         return orderId;//PayPal 创建完订单后会返回一个 订单 ID，你需要把这个 ID 返回给 PayPal，它会记录并用于后续付款流程。
     });
   }
+
+  const deliverOrderHandler = async () => {
+    try {
+        await deliverOrder(orderId);
+        refetch();
+        toast.success('Order delivery');
+    } catch (err) {
+        toast.error(err?.data?.message || err.message);
+    }
+  }
+
 
   return isLoading ? (
     <Loader /> 
@@ -228,6 +242,14 @@ const OrderScreen = () => {
 
 
                             {/* MARK AS DELIVERED PLACEORDER */}
+                            { loadingDeliver && <Loader />}
+                            {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                                <ListGroup.Item>
+                                    <Button type='button' className='btn btn-block' onClick={deliverOrderHandler}>
+                                        Mark As Delivered
+                                    </Button>
+                                </ListGroup.Item>
+                            )}
                         </ListGroup>
                     </Card>
             </Col>

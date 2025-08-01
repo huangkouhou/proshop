@@ -147,9 +147,9 @@ return (
                                         <FaTimes style={{ color: 'red' }}/>
                                     )}
                                 </td>
-
+            {/*LinkContainer给 Bootstrap 组件加上路由跳转功能,这样点击这个按钮后，会跳转到订单详情页 /order/id*/}
                                 <td>
-                                    <LinkContainer to={`/order/${order._id}`}>
+                                    <LinkContainer to={`/order/${order._id}`}> 
                                       <Button className="btn-sm" variant='light'>
                                         Details
                                       </Button>
