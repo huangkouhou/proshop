@@ -8,6 +8,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
                 url: PRODUCTS_URL,
             }),
             keepUnusedDataFor: 5,
+            providesTags: ['Products'],
         }),
         getProductDetails: builder.query({
             query: (productId) => ({
@@ -25,6 +26,16 @@ export const productsApiSlice = apiSlice.injectEndpoints({
             //这一句的作用是 告诉 RTK Query：这个 mutation 执行成功后，和 'Product' 相关的缓存都应该失效（作废），系统会自动重新请求获取更新数据。
             invalidatesTags: ['Product'],
         }),
+
+        //Admin
+        updateProduct: builder.mutation({
+            query: (data) => ({
+                url: `${PRODUCTS_URL}/${data.productId}`,
+                method: 'PUT',
+                body: data,
+            }),
+            invalidatesTags: ['Products'],
+        }),
     }),
 });
 
@@ -32,6 +43,7 @@ export const {
     useGetProductsQuery, 
     useGetProductDetailsQuery, 
     useCreateProductMutation, 
+    useUpdateProductMutation,
 } = productsApiSlice;
 
 //RTK Query 提供的 内建函数

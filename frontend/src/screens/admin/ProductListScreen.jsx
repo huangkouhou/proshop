@@ -1,7 +1,7 @@
 import { LinkContainer } from "react-router-bootstrap";
 import { Table, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
-import { FaTimes, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 import Message from "../../components/Message";
 import Loader from "../../components/Loader";
 import { toast } from "react-toastify";
