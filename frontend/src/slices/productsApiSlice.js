@@ -1,4 +1,4 @@
-import { PRODUCTS_URL } from "../constants";
+import { PRODUCTS_URL, UPLOAD_URL } from "../constants";
 import { apiSlice } from "./apiSlice";
 
 export const productsApiSlice = apiSlice.injectEndpoints({
@@ -30,11 +30,21 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         //Admin
         updateProduct: builder.mutation({
             query: (data) => ({
-                url: `${PRODUCTS_URL}/${data.productId}`,
+                url: `${PRODUCTS_URL}/${data._id}`, //✅ 后端的 updateProduct 是基于 _id 来更新产品的
                 method: 'PUT',
                 body: data,
             }),
             invalidatesTags: ['Products'],
+        }),
+        
+
+        //Admin 
+        uploadProductImage: builder.mutation({
+            query: (data) => ({
+                url: `${UPLOAD_URL}`,
+                method: 'POST',
+                body: data,
+            }),
         }),
     }),
 });
@@ -44,6 +54,7 @@ export const {
     useGetProductDetailsQuery, 
     useCreateProductMutation, 
     useUpdateProductMutation,
+    useUploadProductImageMutation,
 } = productsApiSlice;
 
 //RTK Query 提供的 内建函数

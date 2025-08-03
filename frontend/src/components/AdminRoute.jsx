@@ -7,7 +7,7 @@ const AdminRoute = () => {
 
   //如果用户已登录，就渲染子路由 <Outlet />。如果未登录，就跳转到登录页 /login。
   return userInfo && userInfo.isAdmin ? (
-    <Outlet />
+    <Outlet /> // 这里就会去渲染 productlist 或 orderlist 等子页面,子路由的路径是写在 <Route> 配置中的
    ) : (
    <Navigate to='/login' replace />
    );

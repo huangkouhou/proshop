@@ -5,7 +5,11 @@ import Message from "../../components/Message";
 import Loader from "../../components/Loader";
 import FormContainer from "../../components/FormContainer";
 import { toast } from "react-toastify";
-import { useUpdateProductMutation, useGetProductDetailsQuery } from "../../slices/productsApiSlice";
+import { 
+    useUpdateProductMutation, 
+    useGetProductDetailsQuery,
+    useUploadProductImageMutation, 
+} from "../../slices/productsApiSlice";
 
 
 
@@ -31,6 +35,9 @@ const ProductEditScreen = () => {
 } = useGetProductDetailsQuery(productId);
 
   const [updateProduct, {isLoading: loadingUpdate}] = useUpdateProductMutation();
+
+  const [uploadProductImage, { isLoading: loadingUpload }] = useUploadProductImageMutation();
+
 
   const navigate = useNavigate();
 
@@ -60,12 +67,25 @@ const ProductEditScreen = () => {
     }
   
 
-  const result = await updateProduct(updatedProduct);
+    const result = await updateProduct(updatedProduct);
     if (result.error) {
-        toast.error(result.error);
+        toast.error(result.error.data?.message || result.error.message || 'Update failed');
     } else {
         toast.success('Product updated');
         navigate('/admin/productlist');
+    }
+
+};
+
+const uploadFileHandler = async(e) => {
+    const formData = new FormData();
+    formData.append('image', e.target.files[0]);
+    try {
+        const res = await uploadProductImage(formData).unwrap();
+        toast.success(res.message);
+        setImage(res.image);
+    } catch (err) {
+        toast.error(err?.data?.message || err.error );
     }
 };
 
@@ -78,7 +98,11 @@ const ProductEditScreen = () => {
     <FormContainer>
         <h1>Edit Product</h1>
         {loadingUpdate && <Loader />}
-        {isLoading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : (
+        {isLoading ? <Loader /> : error ? (
+        <Message variant="danger">
+            {error?.data?.message || error?.error || 'Something went wrong'}
+        </Message>
+        ) : (
             //表单的提交事件应该由 <form> 控制，而不是按钮
             <Form onSubmit={ submitHandler }>
                 <Form.Group controlId="name" className="my-2">
@@ -102,6 +126,20 @@ const ProductEditScreen = () => {
                 </Form.Group>
 
                 {/* IMAGE INPUT PLACEHOLDER */}
+                <Form.Group controlId="image" className="my-2">
+                    <Form.Label>Image</Form.Label>
+                    <Form.Control 
+                    type="text" 
+                    placeholder="Enter image url" 
+                    value={image} 
+                    onChange={(e) => setImage(e.target.value)}
+                    ></Form.Control>
+                    <Form.Control 
+                    type='file' 
+                    label='Choose file'
+                    onChange={uploadFileHandler}
+                    ></Form.Control>
+                </Form.Group>
 
                 <Form.Group controlId="brand" className="my-2">
                     <Form.Label>Name</Form.Label>
