@@ -46,6 +46,14 @@ export const productsApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+
+        //admin
+        deleteProduct: builder.mutation({
+            query: (productId) => ({
+                url: `${PRODUCTS_URL}/${productId}`,
+                method:'DELETE',
+            }),
+        }),
     }),
 });
 
@@ -55,6 +63,7 @@ export const {
     useCreateProductMutation, 
     useUpdateProductMutation,
     useUploadProductImageMutation,
+    useDeleteProductMutation,
 } = productsApiSlice;
 
 //RTK Query 提供的 内建函数

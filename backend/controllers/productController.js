@@ -70,4 +70,27 @@ const updateProduct = asyncHandler(async(req, res) => {
     }
 });
 
-export { getProducts, getProductById, createProduct, updateProduct };
+
+//@desc Delete a product
+//@route DELETE/api/products/:id
+//@access Private/Admin
+const deleteProduct = asyncHandler(async(req, res) => {
+    const product = await Product.findById(req.params.id);
+
+    if (product) {
+      //Product.deleteOne 是来自 Mongoose 提供的 Model 静态方法。删除匹配的第一个文档。await product.remove();   await Product.findByIdAndDelete(req.params.id);
+      await Product.deleteOne({_id: product._id});
+      res.status(200).json({ message: 'Product delete' });
+    } else {
+        res.status(404);
+        throw new Error('Resource not found');
+    }
+});
+
+export { 
+    getProducts, 
+    getProductById, 
+    createProduct, 
+    updateProduct,
+    deleteProduct,
+};
