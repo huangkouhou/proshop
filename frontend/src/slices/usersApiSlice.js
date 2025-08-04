@@ -50,6 +50,22 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
+        getUserDetails: builder.query({
+            query: (userId) => ({
+                url: `${USERS_URL}/${userId}`,
+            }),
+            keepUnusedDataFor: 5,
+        }),
+
+        updateUser: builder.mutation({
+            query: ( data ) => ({                //✅ 不要解构 do not use ({data})
+                url: `${USERS_URL}/${data._id}`, // ✅ 从 data._id 中取 ID
+                method: 'PUT',
+                body: data,
+            }),
+            invalidatesTags: ['Users'],
+        }),
+
     }),
 });
 
@@ -60,6 +76,8 @@ export const {
     useProfileMutation,
     useGetUsersQuery,
     useDeleteUserMutation,
+    useGetUserDetailsQuery,
+    useUpdateUserMutation,
 } = apiSlice;
 
 //RTK Query 提供的 内建函数
