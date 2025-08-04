@@ -35,6 +35,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
+        getUsers: builder.query({
+            query: () => ({
+                url: USERS_URL,
+            }),
+            providesTags: ['Users'], //这是用于 缓存管理 的标签系统，作用是告诉 RTK Query：这个查询结果会提供一个叫做 'Users' 的标签。
+            keepUnusedDataFor: 5,
+        }),
 
     }),
 });
@@ -43,12 +50,16 @@ export const {
     useLoginMutation, 
     useLogoutMutation, 
     useRegisterMutation,
-    useProfileMutation 
+    useProfileMutation,
+    useGetUsersQuery,
 
-} = usersApiSlice;
+} = apiSlice;
 
 //RTK Query 提供的 内建函数
 // | 方法名        | 说明                    | 例子           |
 // | ---------- | --------------------- | ------------ |
 // | `query`    | 读取数据（GET 请求）         | 获取用户、获取文章列表等 |
 // | `mutation` | 修改数据（POST/PUT/DELETE） | 登录、注册、修改资料等  |
+
+
+//✅ 正确理解：providesTags + invalidatesTags 是一对组合拳
