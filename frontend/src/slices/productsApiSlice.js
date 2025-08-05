@@ -50,9 +50,19 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         //admin
         deleteProduct: builder.mutation({
             query: (productId) => ({
-                url: `${PRODUCTS_URL}/${productId}`,
+                url: `${PRODUCTS_URL}/${productId}`, //如果传入的是 ID，直接用。
                 method:'DELETE',
             }),
+        }),
+
+        //createProductReview
+        createProductReview: builder.mutation({
+            query: (data) => ({
+                url: `${PRODUCTS_URL}/${data.productId}/reviews`, //如果传入的是对象，需要从对象中提取字段。（一个包含多个属性的对象productId，rating，comment）
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['Product'],
         }),
     }),
 });
@@ -64,6 +74,7 @@ export const {
     useUpdateProductMutation,
     useUploadProductImageMutation,
     useDeleteProductMutation,
+    useCreateProductReviewMutation,
 } = productsApiSlice;
 
 //RTK Query 提供的 内建函数
