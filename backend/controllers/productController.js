@@ -5,8 +5,14 @@ import Product from "../models/productModel.js";
 //@route GET/api/products
 //@access Public
 const getProducts = asyncHandler(async(req, res) => {
-    const products = await Product.find({});
-    res.json(products);
+    const pageSize = 2; // paginate products
+    const page = Number(req.query.pageNumber) || 1; //从请求的 URL 查询参数中获取分页页码，如果没有传，就默认是第 1 页。
+    const count = await Product.countDocuments(); //统计 Product 集合中所有文档的数量（即：产品总数）
+
+    const products = await Product.find({})
+        .limit(pageSize)
+        .skip(pageSize * (page -1)); //MongoDB 的 .skip(n) 方法表示：“跳过前 n 条记录”。
+    res.json({products, page, pages: Math.ceil(count / pageSize)}); //Math.ceil(...) 表示向上取整（因为可能不能整除）
 });
 
 
