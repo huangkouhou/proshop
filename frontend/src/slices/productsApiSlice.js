@@ -68,6 +68,14 @@ export const productsApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ['Product'],
         }),
+
+        //Get top 3 products
+        getTopProducts: builder.query({
+            query: () => ({
+                url: `${PRODUCTS_URL}/top`,
+            }),
+            keepUnusedDataFor: 5,
+        }),
     }),
 });
 
@@ -79,6 +87,7 @@ export const {
     useUploadProductImageMutation,
     useDeleteProductMutation,
     useCreateProductReviewMutation,
+    useGetTopProductsQuery,
 } = productsApiSlice;
 
 //RTK Query 提供的 内建函数

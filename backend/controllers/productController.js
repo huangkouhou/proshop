@@ -5,7 +5,7 @@ import Product from "../models/productModel.js";
 //@route GET/api/products
 //@access Public
 const getProducts = asyncHandler(async(req, res) => {
-    const pageSize = 1; // paginate products
+    const pageSize = 8; // paginate products
     const page = Number(req.query.pageNumber) || 1; //从请求的 URL 查询参数中获取分页页码，如果没有传，就默认是第 1 页。
     
     //$regex 是 MongoDB 中用于执行模糊匹配字段内容，类似 SQL 的 LIKE，但更强大。
@@ -145,6 +145,16 @@ const createProductReview = asyncHandler(async (req, res) => {
 });
 
 
+//@desc Get top rated products
+//@route GET/api/products/top
+//@access Public
+const getTopProducts = asyncHandler(async(req, res) => {
+    //rating: -1 是 MongoDB 中的排序语法，.sort({ rating: -1 })对结果按 rating 字段排序，-1 表示 降序（从高到低），.limit(3)只返回 前三个产品
+    const products = await Product.find({}).sort({rating: -1}).limit(3);
+    res.status(200).json(products);
+});
+
+
 export { 
     getProducts, 
     getProductById, 
@@ -152,4 +162,5 @@ export {
     updateProduct,
     deleteProduct,
     createProductReview,
+    getTopProducts,
 };
