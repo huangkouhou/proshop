@@ -5,11 +5,18 @@ import Product from "../models/productModel.js";
 //@route GET/api/products
 //@access Public
 const getProducts = asyncHandler(async(req, res) => {
-    const pageSize = 2; // paginate products
+    const pageSize = 1; // paginate products
     const page = Number(req.query.pageNumber) || 1; //从请求的 URL 查询参数中获取分页页码，如果没有传，就默认是第 1 页。
-    const count = await Product.countDocuments(); //统计 Product 集合中所有文档的数量（即：产品总数）
+    
+    //$regex 是 MongoDB 中用于执行模糊匹配字段内容，类似 SQL 的 LIKE，但更强大。
+    //允许前端通过 /api/products?keyword=phone 模糊搜索商品名，用户体验更友好。
+    const keyword = req.query.keyword 
+        ? {name: { $regex: req.query.keyword, $options: 'i' } } //✅ 让正则匹配变成大小写不敏感（case-insensitive）。
+        : {};
 
-    const products = await Product.find({})
+    const count = await Product.countDocuments({...keyword}); //统计 Product 集合中所有文档的数量（即：产品总数）
+
+    const products = await Product.find({...keyword})
         .limit(pageSize)
         .skip(pageSize * (page -1)); //MongoDB 的 .skip(n) 方法表示：“跳过前 n 条记录”。
     res.json({products, page, pages: Math.ceil(count / pageSize)}); //Math.ceil(...) 表示向上取整（因为可能不能整除）
