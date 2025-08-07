@@ -1,4 +1,4 @@
-import { LinkContainer } from "react-router-bootstrap";
+import { NavLink } from 'react-router-dom';
 import { Table, Button, Row, Col } from 'react-bootstrap';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { useParams } from "react-router-dom";
@@ -84,19 +84,28 @@ const ProductListScreen = () => {
                             <td>{product.category}</td>
                             <td>{product.brand}</td>
                             <td>
-                                <LinkContainer to={`/admin/product/${product._id}/edit`}>
-                                    <Button variant='light' className="btn-sm mx-2">
-                                        <FaEdit />
-                                    </Button>
-                                </LinkContainer>
+                            {product._id && (
+                              <Button
+                                as={NavLink}
+                                to={`/admin/product/${product._id}/edit`}
+                                variant='light'
+                                className="btn-sm mx-2"
+                              >
+                                <FaEdit />
+                              </Button>
+                            )}
 
-                                <Button 
+
+                            {product._id && (
+                              <Button 
                                 variant="danger" 
                                 className="btn-sm text-white"
                                 onClick={() => deleteHandler(product._id)}
-                                >
-                                  <FaTrash />
-                                </Button>
+                              >
+                                <FaTrash />
+                              </Button>
+                            )}
+
                             </td>
                         </tr>
                     ))}

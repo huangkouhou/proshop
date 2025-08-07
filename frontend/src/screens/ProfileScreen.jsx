@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Table, Form, Button, Row, Col } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
+import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Message from "../components/Message";
@@ -147,14 +147,20 @@ return (
                                         <FaTimes style={{ color: 'red' }}/>
                                     )}
                                 </td>
-            {/*LinkContainer给 Bootstrap 组件加上路由跳转功能,这样点击这个按钮后，会跳转到订单详情页 /order/id*/}
+            {/*LinkContainer给 Bootstrap 组件加上路由跳转功能,这样点击这个按钮后，会跳转到订单详情页 /order/id 加一个判断，确保 order._id 存在才渲染跳转按钮*/}
                                 <td>
-                                    <LinkContainer to={`/order/${order._id}`}> 
-                                      <Button className="btn-sm" variant='light'>
-                                        Details
-                                      </Button>
-                                    </LinkContainer>
+                                  {order._id && (
+                                    <Button
+                                      as={NavLink}
+                                      to={`/order/${order._id}`}
+                                      className="btn-sm"
+                                      variant="light"
+                                    >
+                                      Details
+                                    </Button>
+                                  )}
                                 </td>
+
 
                             </tr>
                         )) }

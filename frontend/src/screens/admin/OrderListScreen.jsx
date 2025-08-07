@@ -1,6 +1,5 @@
-import { LinkContainer } from "react-router-bootstrap";
+import { NavLink } from 'react-router-dom';
 import { Table, Button } from 'react-bootstrap';
-import { useDispatch, useSelector } from "react-redux";
 import { FaTimes } from 'react-icons/fa';
 import Message from "../../components/Message";
 import Loader from "../../components/Loader";
@@ -55,11 +54,16 @@ const OrderListScreen = () => {
                     )}
                   </td>
                   <td>
-                    <LinkContainer to={`/order/${order._id}`}>
-                      <Button variant='light' className="btn-sm">
-                        Details
-                      </Button>
-                    </LinkContainer>
+                  {order._id && (
+                    <Button
+                      as={NavLink}
+                      to={`/order/${order._id}`}
+                      variant="light"
+                      className="btn-sm"
+                    >
+                      Details
+                    </Button>
+                  )}
                   </td>
                 </tr>
               ))}
