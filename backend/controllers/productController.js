@@ -5,7 +5,7 @@ import Product from "../models/productModel.js";
 //@route GET/api/products
 //@access Public
 const getProducts = asyncHandler(async(req, res) => {
-    const pageSize = 8; // paginate products
+    const pageSize = process.env.PAGINATION_LIMIT;
     const page = Number(req.query.pageNumber) || 1; //从请求的 URL 查询参数中获取分页页码，如果没有传，就默认是第 1 页。
     
     //$regex 是 MongoDB 中用于执行模糊匹配字段内容，类似 SQL 的 LIKE，但更强大。
