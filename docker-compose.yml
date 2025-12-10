@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # 后端服务
+  backend:
+    image: ${DOCKER_USERNAME}/my-node-app:latest
+    restart: always
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - PORT=5001
+    deploy:
+      resources:
+        limits:
+          memory: 300M  # 限制内存！
+    networks:
+      - app-net
+
+  # 前端 + Caddy 服务
+  web:
+    image: ${DOCKER_USERNAME}/my-react-caddy:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    deploy:
+      resources:
+        limits:
+          memory: 150M  # Caddy 很省内存
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge

@@ -1,0 +1,17 @@
+penghuang.dev, www.penghuang.dev {
+    # 1. 静态文件根目录 (React 打包后的文件会放在容器里的 /srv)
+    root * /srv
+
+    # 2. 开启文件服务
+    file_server
+
+    # 3. 压缩 (加速加载)
+    encode gzip
+
+    # 4. React 路由兜底 (刷新页面不报 404)
+    try_files {path} /index.html
+
+    # 5. API 反向代理
+    # 所有 /api/ 开头的请求转发给 backend 容器
+    reverse_proxy /api/* backend:5001
+}
