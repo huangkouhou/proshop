@@ -70,6 +70,14 @@ jobs:
             # 3. 创建 .env 文件注入变量
             echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > .env
             echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            echo "PAYPAL_CLIENT_ID=${{ secrets.PAYPAL_CLIENT_ID }}" >> .env
+
+            echo "NODE_ENV=production" >> .env
+            echo "PORT=5001" >> .env
+            echo "PAGINATION_LIMIT=8" >> .env
+
+
             
             # 4. 拉取新镜像并无缝重启
             docker-compose pull
