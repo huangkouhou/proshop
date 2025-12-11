@@ -1,17 +1,19 @@
 penghuang.dev, www.penghuang.dev {
-    # 1. 静态文件根目录 (React 打包后的文件会放在容器里的 /srv)
-    root * /srv
-
-    # 2. 开启文件服务
-    file_server
-
-    # 3. 压缩 (加速加载)
+# 启用压缩
     encode gzip
 
-    # 4. React 路由兜底 (刷新页面不报 404)
-    try_files {path} /index.html
+    # --- 1. 优先处理后端 API ---
+    # 只要是 /api/ 开头的，直接转发给后端，不要往下走
+    handle /api/* {
+        reverse_proxy backend:5001
+    }
 
-    # 5. API 反向代理
-    # 所有 /api/ 开头的请求转发给 backend 容器
-    reverse_proxy /api/* backend:5001
+    # --- 2. 处理前端 React ---
+    # 剩下的所有请求，都走这里
+    handle {
+        root * /srv
+        # 只有找不到文件时，才重写到 index.html
+        try_files {path} /index.html
+        file_server
+    }
 }
