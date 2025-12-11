@@ -5,9 +5,9 @@ services:
   backend:
     image: ${DOCKER_USERNAME}/my-node-app:latest
     restart: always
-    environment:
-      - MONGO_URI=${MONGO_URI}
-      - PORT=5001
+# 这告诉 Docker：直接读取 .env 文件里的所有变量注入给容器
+    env_file:
+      - .env
     deploy:
       resources:
         limits:
