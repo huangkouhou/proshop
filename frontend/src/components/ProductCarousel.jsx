@@ -3,6 +3,7 @@ import { Carousel, Image } from 'react-bootstrap';
 import Loader from './Loader';
 import Message from './Message';
 import { useGetTopProductsQuery } from '../slices/productsApiSlice';
+import { formatJPY } from "../utils/cartUtils";
 
 const ProductCarousel = () => {
   const { data: products, isLoading, error } = useGetTopProductsQuery();
@@ -24,7 +25,7 @@ return (
               <Image src={product.image} alt={product.name} fluid />
               <Carousel.Caption className='carousel-caption'>
                 <h2>
-                  {product.name} (¥{product.price.toLocaleString('ja-JP')})
+                  {product.name} {formatJPY(product.price)}
                 </h2>
               </Carousel.Caption>
             </Link>

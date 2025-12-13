@@ -3,13 +3,16 @@ export const addDecimals = (num) => {
     return (Math.round(num * 100) / 100).toFixed(0);
 };
 
+export const formatJPY = (value) =>
+  `¥${Number(value).toLocaleString('ja-JP')}`;
+
 export const updateCart = (state) => {
     // Calculate items price
     state.itemsPrice = addDecimals(state.cartItems.reduce((acc, item) => //acc 是 reduce 的累加器（accumulator），acc 初始值是 0
         acc + item.price * item.qty, 0));
 
-    // Calculate shipping price(If order is over $100 then free, else $10)
-    state.shippingPrice = addDecimals(state.itemsPrice > 100 ? 0 : 10);
+
+    state.shippingPrice = addDecimals(state.itemsPrice > 20000 ? 0 : 10);
     // Calculate tax price(10% tax)
     state.taxPrice = addDecimals(state.itemsPrice * 0.1);
 

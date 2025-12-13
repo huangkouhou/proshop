@@ -114,7 +114,7 @@ const updateOrderToDelivered = asyncHandler(async(req, res) => {
 //@desc Get all orders
 //@route Get /api/orders
 //@access Private/Admin
-const getOrders = asyncHandler(async(res) => {
+const getOrders = asyncHandler(async(req, res) => {
     const orders = await Order.find({})      // 查询所有订单
     .populate('user', 'name');            // 联表查询，获取每笔订单关联的用户的 id 和 name 字段
     res.status(200).json(orders);

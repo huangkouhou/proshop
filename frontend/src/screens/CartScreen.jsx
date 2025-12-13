@@ -4,6 +4,7 @@ import { Row, Col, ListGroup, Image, Form, Button, Card, ListGroupItem } from 'r
 import { FaTrash } from 'react-icons/fa'; //从 react-icons 库里导入一个垃圾桶图标（删除按钮图标）
 import Message from '../components/Message'; 
 import { addToCart, removeFromCart } from '../slices/cartSlice';
+import { formatJPY } from '../utils/cartUtils';
 
 
 const CartScreen = () => {
@@ -44,7 +45,7 @@ const CartScreen = () => {
                                 <Col md={3}>
                                     <Link to={`/product/${item._id}`}>{item.name}</Link>
                                 </Col>
-                                <Col md={2}>¥{item.price}</Col>
+                                <Col md={2}>{formatJPY(item.price)}</Col>
                                 <Col md={2}>
                                     <Form.Control           
                                         as='select'
@@ -80,7 +81,7 @@ const CartScreen = () => {
                         Subtotal({ cartItems.reduce((acc, item) => acc + item.qty, 0)}) 
                         items
                     </h2>
-                    ¥{ cartItems.reduce((acc, item) => acc + item.qty * item.price, 0).toFixed(0) }
+                    { formatJPY(cartItems.reduce((acc, item) => acc + item.qty * item.price, 0)) }
                 </ListGroupItem>
                 <ListGroupItem>
                     <Button 

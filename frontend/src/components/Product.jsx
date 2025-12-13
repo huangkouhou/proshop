@@ -1,6 +1,7 @@
 import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Rating from "./Rating";
+import { formatJPY } from "../utils/cartUtils";
 
 const Product = ({ product }) => {
   return (
@@ -32,7 +33,7 @@ const Product = ({ product }) => {
 
         {/* 商品价格 */}
         <Card.Text as="h3">
-            ¥{product.price.toLocaleString('ja-JP')}
+            {formatJPY(product.price)}
           </Card.Text>
         </Card.Body>
       

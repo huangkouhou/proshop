@@ -10,6 +10,7 @@ import Message from "../components/Message";
 import Meta from "../components/Meta";
 import { useGetProductDetailsQuery, useCreateProductReviewMutation } from "../slices/productsApiSlice";
 import { addToCart } from "../slices/cartSlice";
+import { formatJPY } from "../utils/cartUtils";
 
 // import { useState, useEffect } from 'react';
 // import axios from "axios";
@@ -124,7 +125,7 @@ return (
             <Row>
                 <Col>Price:</Col>
                 <Col>
-                <strong>¥{product.price.toLocaleString('ja-JP')}</strong>
+                <strong>{formatJPY(product.price)}</strong>
                 </Col>
             </Row>
             </ListGroup.Item>

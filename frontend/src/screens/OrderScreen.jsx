@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
+import { formatJPY } from '../utils/cartUtils';
 import { 
     useGetOrderDetailsQuery, 
     usePayOrderMutation, 
@@ -197,7 +198,7 @@ const OrderScreen = () => {
                                     </Link>
                                 </Col>
                                 <Col md={4}>
-                                    {item.qty} x {item.price} = ¥ {item.qty * item.price}
+                                {item.qty} × {formatJPY(item.price)} = {formatJPY(item.qty * item.price)}
                                 </Col>
                             </Row>
                         </ListGroup.Item>
@@ -216,22 +217,22 @@ const OrderScreen = () => {
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Items</Col>
-                                    <Col>¥{order.itemsPrice}</Col>
+                                    <Col>{formatJPY(order.itemsPrice)}</Col>
                                 </Row>
 
                                 <Row>
                                     <Col>Shipping Price</Col>
-                                    <Col>¥{order.shippingPrice}</Col>
+                                    <Col>{formatJPY(order.shippingPrice)}</Col>
                                 </Row>
 
                                 <Row>
                                     <Col>Tax Price</Col>
-                                    <Col>¥{order.taxPrice}</Col>
+                                    <Col>{formatJPY(order.taxPrice)}</Col>
                                 </Row>
 
                                 <Row>
                                     <Col>Total Price</Col>
-                                    <Col>¥{order.totalPrice}</Col>
+                                    <Col>{formatJPY(order.totalPrice)}</Col>
                                 </Row>
                             </ListGroup.Item>
 
