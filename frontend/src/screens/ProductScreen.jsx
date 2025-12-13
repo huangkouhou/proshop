@@ -108,7 +108,7 @@ return (
         </ListGroup.Item>
 
         <ListGroup.Item>
-            Price: ${product.price}
+            Price: ¥{product.price.toLocaleString('ja-JP')}
         </ListGroup.Item>
 
         <ListGroup.Item>
@@ -124,7 +124,7 @@ return (
             <Row>
                 <Col>Price:</Col>
                 <Col>
-                <strong>${product.price}</strong>
+                <strong>¥{product.price.toLocaleString('ja-JP')}</strong>
                 </Col>
             </Row>
             </ListGroup.Item>

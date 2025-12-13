@@ -1,5 +1,8 @@
+import { redirect } from "react-router-dom";
 import asyncHandler from "../middleware/asyncHandler.js";
 import Order from '../models/orderModel.js';
+import PAYPAY from '@paypayopa/paypayopa-sdk-node';
+import { v4 as uuidv4 } from 'uuid';
 
 
 //@desc Create new order
@@ -112,7 +115,7 @@ const updateOrderToDelivered = asyncHandler(async(req, res) => {
 //@desc Get all orders
 //@route Get /api/orders
 //@access Private/Admin
-const getOrders = asyncHandler(async(req, res) => {
+const getOrders = asyncHandler(async(res) => {
     const orders = await Order.find({})      // 查询所有订单
     .populate('user', 'name');            // 联表查询，获取每笔订单关联的用户的 id 和 name 字段
     res.status(200).json(orders);
@@ -127,6 +130,60 @@ const getOrders = asyncHandler(async(req, res) => {
 // });
 
 
+
+
+// 创建 PayPay 支付链接
+// @desc    Create PayPay payment link
+// @route   POST /api/orders/:id/paypay
+// @access  Private
+const createPayPayPayment = asyncHandler(async(req, res) => {
+    const order = await Order.findById(req.params.id);
+
+    if (order){
+    PAYPAY.Configure({
+        clientId: process.env.PAYPAY_API_KEY,
+        clientSecret: process.env.PAYPAY_API_SECRET,
+        merchantId: process.env.PAYPAY_MERCHANT_ID,
+        productionMode: false,// 测试环境必须是 false
+    });
+        const paymentId = uuidv4();//generate unique id
+
+        const payload = {
+            merchantPaymentId: paymentId,
+            amount: {
+                    amount: Math.floor(order.totalPrice),
+                    currency: 'JPY',
+                },
+                codeType: 'ORDER_QR',
+                orderDescription: `Order ${order._id}`,
+                isAuthorization: false,
+                redirectUrl: `${baseUrl}/order/${order._id}`,
+                redirectType: 'WEB_LINK',
+                userAgent: req.get('User-Agent'),
+            };
+
+            // 调用 PayPay API
+            const response = await PAYPAY.QRCodeCreate(payload);
+
+            const responseBody = response.BODY || response.body;
+
+
+            // 把生成的跳转链接 (url) 发给前端
+            if (responseBody && responseBody.resultInfo && responseBody.resultInfo.code === 'SUCCESS') {
+                res.json({ url: responseBody.data.url });
+            } else {
+                res.status(500);
+                throw new Error('PayPay API Error: ' + response.body.resultInfo.message);
+            }
+        } else {
+            res.status(404);
+            throw new Error('Order not found');
+        }
+
+    });
+
+
+
 export {
     addOrderItems,
     getMyOrders,
@@ -134,5 +191,6 @@ export {
     updateOrderToPaid,
     updateOrderToDelivered,
     getOrders,
+    createPayPayPayment,
 
 };

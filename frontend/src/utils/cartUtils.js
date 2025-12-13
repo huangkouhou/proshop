@@ -1,6 +1,6 @@
 //金额处理函数，把数字保留两位小数，输出字符串。
 export const addDecimals = (num) => {
-    return (Math.round(num * 100) / 100).toFixed(2);
+    return (Math.round(num * 100) / 100).toFixed(0);
 };
 
 export const updateCart = (state) => {

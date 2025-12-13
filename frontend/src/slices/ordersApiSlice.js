@@ -3,6 +3,7 @@ import { ORDER_URL, PAYPAL_URL } from "../constants";
 
 
 
+
 export const ordersApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         createOrder: builder.mutation({
@@ -56,8 +57,12 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
-        
-
+        createPayPayPayment: builder.mutation({
+            query: (orderId) => ({
+                url: `${ORDER_URL}/${orderId}/paypay`,
+                method: 'POST',
+            }),
+        }),
 
     }),
 });
@@ -70,6 +75,7 @@ export const {
     useGetMyOrdersQuery,
     useGetOrdersQuery,
     useDeliverOrderMutation,
+    useCreatePayPayPaymentMutation,
 } = ordersApiSlice;
 
 

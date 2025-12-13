@@ -11,6 +11,7 @@ import {
     usePayOrderMutation, 
     useGetPayPalClientIdQuery,
     useDeliverOrderMutation, 
+    useCreatePayPayPaymentMutation,
 } from '../slices/ordersApiSlice';
 
 
@@ -33,6 +34,10 @@ const OrderScreen = () => {
   //专门用于控制和读取 PayPal JS SDK 的加载状态。
   const [{ isPending }, paypalDispatch ] = usePayPalScriptReducer();
 
+  //initiate PayPay Mutation
+  const [createPayPayPayment, { isLoading: loadingPayPay }] = useCreatePayPayPaymentMutation();
+
+
   //从后端获取 PayPal 的 client-id 的 RTK Query 请求。
   const { 
     data: paypal, 
@@ -51,7 +56,7 @@ const OrderScreen = () => {
                 type: 'resetOptions',
                 value: {
                     'client-id': paypal.clientId,
-                    currency: 'USD',
+                    currency: 'JPY',
                 }
             });
             // 设置加载状态
@@ -111,6 +116,19 @@ const OrderScreen = () => {
         toast.error(err?.data?.message || err.message);
     }
   }
+
+    const payWithPayPayHandler = async() => {
+        try {
+            // 调用的是上面解构出来的 createPayPayPayment 函数
+            const res = await createPayPayPayment(orderId).unwrap();
+
+            if(res.url){
+                window.location.href = res.url;
+            }
+        } catch (err) {
+            toast.error(err?.data?.message || err.message);
+        }
+    };
 
 
   return isLoading ? (
@@ -179,7 +197,7 @@ const OrderScreen = () => {
                                     </Link>
                                 </Col>
                                 <Col md={4}>
-                                    {item.qty} x {item.price} = $ {item.qty * item.price}
+                                    {item.qty} x {item.price} = ¥ {item.qty * item.price}
                                 </Col>
                             </Row>
                         </ListGroup.Item>
@@ -198,50 +216,61 @@ const OrderScreen = () => {
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Items</Col>
-                                    <Col>${order.itemsPrice}</Col>
+                                    <Col>¥{order.itemsPrice}</Col>
                                 </Row>
 
                                 <Row>
                                     <Col>Shipping Price</Col>
-                                    <Col>${order.shippingPrice}</Col>
+                                    <Col>¥{order.shippingPrice}</Col>
                                 </Row>
 
                                 <Row>
                                     <Col>Tax Price</Col>
-                                    <Col>${order.taxPrice}</Col>
+                                    <Col>¥{order.taxPrice}</Col>
                                 </Row>
 
                                 <Row>
                                     <Col>Total Price</Col>
-                                    <Col>${order.totalPrice}</Col>
+                                    <Col>¥{order.totalPrice}</Col>
                                 </Row>
                             </ListGroup.Item>
+
+
                             { !order.isPaid && (
                                 <ListGroup.Item>
-                                    {loadingPay && <Loader />}
-                                    {isPending ? <Loader /> : (
-                                        <div>
-                                            {/* <Button 
-                                                onClick={ onApproveTest } 
-                                                style={{marginBottom: '10px'}}
-                                            >
-                                                Test Pay Order
-                                            </Button> */}
-                                            <div>
-                                                <PayPalButtons
-                                                    createOrder={createOrder}
-                                                    onApprove={onApprove}
-                                                    onError={onError}
-                                                ></PayPalButtons>
-                                            </div>
-                                        </div>
+                                    {(loadingPay || loadingPayPay) && <Loader />}
 
+                                    {order.paymentMethod === 'PayPay' ? (
+                                        <Button 
+                                            type='button' 
+                                            className='btn-block' 
+                                            style={{ 
+                                                backgroundColor: '#FF0033', 
+                                                borderColor: '#FF0033',
+                                                color: 'white',
+                                                width: '100%' 
+                                            }}
+                                            onClick={payWithPayPayHandler}
+                                            disabled={loadingPayPay} 
+                                        >
+                                            Pay with PayPay
+                                        </Button>
+                                    ) : (
+                                        <div>
+                                            {isPending ? <Loader /> : (
+                                                <div>
+                                                    <PayPalButtons
+                                                        createOrder={createOrder}
+                                                        onApprove={onApprove}
+                                                        onError={onError}
+                                                    ></PayPalButtons>
+                                                </div>
+                                            )}
+                                        </div>
                                     )}
-                                </ListGroup.Item>
+                                </ListGroup.Item>                 
                             )}
 
-
-                            {/* MARK AS DELIVERED PLACEORDER */}
                             { loadingDeliver && <Loader />}
                             {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
                                 <ListGroup.Item>
