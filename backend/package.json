@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/huangkouhou/proshop#readme",
   "dependencies": {
+    "@paypayopa/paypayopa-sdk-node": "^2.1.0",
     "@testing-library/react": "^14.0.0",
     "bcryptjs": "^3.0.2",
     "colors": "^1.4.0",
