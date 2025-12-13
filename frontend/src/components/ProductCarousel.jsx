@@ -13,7 +13,9 @@ return (
     {isLoading ? (  // ✅ 加括号
       <Loader />
     ) : error ? (   // ✅ 加括号
-      <Message variant='danger'>{error}</Message>
+        <Message variant='danger'>
+          {error?.data?.message || error.error}
+        </Message>
     ) : products && products.length > 0 ? (  // ✅ 加上 null 和空数组保护
       <Carousel pause='hover' className='bg-primary mb-4'>
         {products.map((product) => (

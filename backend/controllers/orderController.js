@@ -140,12 +140,14 @@ const createPayPayPayment = asyncHandler(async(req, res) => {
     const order = await Order.findById(req.params.id);
 
     if (order){
-    PAYPAY.Configure({
-        clientId: process.env.PAYPAY_API_KEY,
-        clientSecret: process.env.PAYPAY_API_SECRET,
-        merchantId: process.env.PAYPAY_MERCHANT_ID,
-        productionMode: false,// 测试环境必须是 false
-    });
+        const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+        PAYPAY.Configure({
+            clientId: process.env.PAYPAY_API_KEY,
+            clientSecret: process.env.PAYPAY_API_SECRET,
+            merchantId: process.env.PAYPAY_MERCHANT_ID,
+            productionMode: false,// 测试环境必须是 false
+        });
         const paymentId = uuidv4();//generate unique id
 
         const payload = {

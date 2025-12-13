@@ -76,6 +76,7 @@ jobs:
             echo "PAYPAY_API_KEY=${{ secrets.PAYPAY_API_KEY }}" >> .env
             echo "PAYPAY_API_SECRET=${{ secrets.PAYPAY_API_SECRET }}" >> .env
             echo "PAYPAY_MERCHANT_ID=${{ secrets.PAYPAY_MERCHANT_ID }}" >> .env
+            echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env
 
             echo "NODE_ENV=production" >> .env
             echo "PORT=5001" >> .env
