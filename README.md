@@ -3,7 +3,7 @@
 ![CI/CD Status](https://github.com/huangkouhou/proshop/actions/workflows/deploy.yml/badge.svg)
 ![Docker](https://img.shields.io/badge/Docker-Enabled-blue.svg)
 ![AWS](https://img.shields.io/badge/Deployed%20on-AWS%20EC2-orange.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+
 
 > A full-stack eCommerce application built with the **MERN stack**, fully containerized with **Docker**, and deployed on **AWS EC2** with a robust **CI/CD pipeline**.
 
@@ -102,4 +102,4 @@ PAYPAL_CLIENT_ID=<your_paypal_id>
 PAYPAY_API_KEY=<your_key>
 PAYPAY_API_SECRET=<your_secret>
 PAYPAY_MERCHANT_ID=<your_id>
-FRONTEND_URL=http://localhost:3000
+FRONTEND_URL=https://penghuang.dev
