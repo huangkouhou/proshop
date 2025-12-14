@@ -3,12 +3,39 @@ name: Deploy to EC2
 on:
   push:
     branches: [ "CI/CD-branch" ]
+    paths-ignore:
+      - 'README.md'
+      - '**/README.md'
+      - 'docs/**'
 
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
 jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies (Backend)
+        run: |
+          cd backend
+          npm install
+
+      - name: Run Tests
+        run: |
+          cd backend
+          npm test  
+
+
   build-and-deploy:
+    needs: test-backend
     runs-on: ubuntu-latest
 
     steps:
@@ -88,5 +115,5 @@ jobs:
             docker-compose pull
             docker-compose up -d
             
-            # 5. 清理旧镜像释放空间 (对 t3.small 很重要)
+            # 5. 清理旧镜像释放空间 
             docker image prune -f

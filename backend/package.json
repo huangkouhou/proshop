@@ -7,22 +7,14 @@
   "scripts": {
     "start": "node backend/server.js",
     "server": "nodemon backend/server.js",
+    "test": "jest",
     "client": "npm start --prefix frontend",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "data:import": "node backend/seeder.js",
     "data:destroy": "node backend/seeder.js -d",
     "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/huangkouhou/proshop.git"
-  },
   "author": "Peng Huang",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/huangkouhou/proshop/issues"
-  },
-  "homepage": "https://github.com/huangkouhou/proshop#readme",
   "dependencies": {
     "@paypayopa/paypayopa-sdk-node": "^2.1.0",
     "@testing-library/react": "^14.0.0",
@@ -42,6 +34,8 @@
   "devDependencies": {
     "concurrently": "^9.2.1",
     "dotenv": "^17.2.0",
-    "nodemon": "^3.1.11"
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.11",
+    "supertest": "^7.1.4"
   }
 }
