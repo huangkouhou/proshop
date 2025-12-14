@@ -218,7 +218,7 @@ const verifyPayPayPayment = asyncHandler(async (req, res) => {
         clientId: process.env.PAYPAY_API_KEY,
         clientSecret: process.env.PAYPAY_API_SECRET,
         merchantId: process.env.PAYPAY_MERCHANT_ID,
-        productionMode: process.env.NODE_ENV === 'production',
+        productionMode: false,
     });
 
     // 拿着数据库里存的 ID 去问 PayPay
