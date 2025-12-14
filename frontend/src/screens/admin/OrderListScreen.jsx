@@ -4,6 +4,7 @@ import { FaTimes } from 'react-icons/fa';
 import Message from "../../components/Message";
 import Loader from "../../components/Loader";
 import { useGetOrdersQuery } from "../../slices/ordersApiSlice";
+import { formatJPY } from '../../utils/cartUtils';
 
 const OrderListScreen = () => {
   const { data: orders, isLoading, error } = useGetOrdersQuery();
@@ -14,7 +15,9 @@ const OrderListScreen = () => {
       {isLoading ? (
         <Loader />
       ) : error ? (
-        <Message variant='danger'>{error}</Message>
+      <Message variant='danger'>
+        {error?.data?.message || error?.error || 'Something went wrong'}
+      </Message>
       ) : (
         <Table striped bordered hover responsive
         className="table-sm">
@@ -35,7 +38,7 @@ const OrderListScreen = () => {
                   <td>{order._id}</td>
                   <td>{order.user && order.user.name}</td>
                   <td>{order.createdAt.substring(0, 10)}</td>
-                  <td>${order.totalPrice}</td>
+                  <td>{formatJPY(order.totalPrice)}</td>
                   
                   {/*在使用 .substring() 前确保字段存在, 双重判断：只有 isPaid 为 true 且 paidAt 不为空时，才执行 substring。否则就渲染红色叉号。*/}
                   <td>

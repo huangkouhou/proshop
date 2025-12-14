@@ -1,0 +1,119 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: ["main" ]
+    paths-ignore:
+      - 'README.md'
+      - '**/README.md'
+      - 'docs/**'
+
+env:
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies (Backend)
+        run: |
+          cd backend
+          npm install
+
+      - name: Run Tests
+        run: |
+          cd backend
+          npm test  
+
+
+  build-and-deploy:
+    needs: test-backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # --- 1. 构建并推送 后端 ---
+      - name: Build Backend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/my-node-app:latest
+
+      # --- 2. 构建并推送 前端+Caddy ---
+      - name: Prepare Caddyfile for Build
+        # 小技巧：把根目录的 Caddyfile 复制到 client 目录下
+        # 这样 Docker 构建 client 时就能读到它了
+        run: cp Caddyfile frontend/
+
+      - name: Build Frontend & Caddy
+        uses: docker/build-push-action@v4
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/my-react-caddy:latest
+
+# --- 新增步骤：把 docker-compose.yml 拷贝到服务器 ---
+      - name: Copy docker-compose.yml to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "my-project" 
+
+      # --- 3. 部署到 EC2 ---
+      - name: SSH Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # 1. 准备目录
+            mkdir -p my-project
+            cd my-project
+            
+            # 2. 生成 docker-compose.yml (我们可以直接用 echo 写入最新配置)
+            # 这里为了简单，假设你已经第一次手动上传了 docker-compose.yml
+            # 或者你可以让 action 每次都 scp 传上去
+            
+            # 3. 创建 .env 文件注入变量
+            echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > .env
+            echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            echo "PAYPAL_CLIENT_ID=${{ secrets.PAYPAL_CLIENT_ID }}" >> .env
+        
+            echo "PAYPAY_API_KEY=${{ secrets.PAYPAY_API_KEY }}" >> .env
+            echo "PAYPAY_API_SECRET=${{ secrets.PAYPAY_API_SECRET }}" >> .env
+            echo "PAYPAY_MERCHANT_ID=${{ secrets.PAYPAY_MERCHANT_ID }}" >> .env
+            echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env
+
+            echo "NODE_ENV=production" >> .env
+            echo "PORT=5001" >> .env
+            echo "PAGINATION_LIMIT=8" >> .env
+
+
+            
+            # 4. 拉取新镜像并无缝重启
+            docker-compose pull
+            docker-compose up -d
+            
+            # 5. 清理旧镜像释放空间 
+            docker image prune -f

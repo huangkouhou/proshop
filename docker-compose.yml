@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # 后端服务
+  backend:
+    image: ${DOCKER_USERNAME}/my-node-app:latest
+    restart: always
+# 这告诉 Docker：直接读取 .env 文件里的所有变量注入给容器
+    env_file:
+      - .env
+    deploy:
+      resources:
+        limits:
+          memory: 300M  # 限制内存！
+    networks:
+      - app-net
+
+  # 前端 + Caddy 服务
+  web:
+    image: ${DOCKER_USERNAME}/my-react-caddy:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    # 把证书数据挂载出来 👇👇👇
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    deploy:
+      resources:
+        limits:
+          memory: 150M  # Caddy 很省内存
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:

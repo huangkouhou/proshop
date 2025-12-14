@@ -1,13 +1,22 @@
 import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Rating from "./Rating";
+import { formatJPY } from "../utils/cartUtils";
 
 const Product = ({ product }) => {
   return (
     <Card className="my-3 p-3 rounded">
         {/* 商品图片，点击跳转到详情页 */}
         <Link to={`/product/${product._id}`}>
-          <Card.Img src={product.image} variant="top"/>
+          <Card.Img 
+            src={product.image} 
+            variant='top' 
+            style={{ 
+              height: '220px',      
+              objectFit: 'contain', 
+              padding: '10px'       
+            }} 
+          />
         </Link>
         <Card.Body>
 
@@ -24,7 +33,7 @@ const Product = ({ product }) => {
 
         {/* 商品价格 */}
         <Card.Text as="h3">
-            ${product.price}
+            {formatJPY(product.price)}
           </Card.Text>
         </Card.Body>
       

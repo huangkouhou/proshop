@@ -3,6 +3,7 @@ import { Carousel, Image } from 'react-bootstrap';
 import Loader from './Loader';
 import Message from './Message';
 import { useGetTopProductsQuery } from '../slices/productsApiSlice';
+import { formatJPY } from "../utils/cartUtils";
 
 const ProductCarousel = () => {
   const { data: products, isLoading, error } = useGetTopProductsQuery();
@@ -13,7 +14,9 @@ return (
     {isLoading ? (  // ✅ 加括号
       <Loader />
     ) : error ? (   // ✅ 加括号
-      <Message variant='danger'>{error}</Message>
+        <Message variant='danger'>
+          {error?.data?.message || error.error}
+        </Message>
     ) : products && products.length > 0 ? (  // ✅ 加上 null 和空数组保护
       <Carousel pause='hover' className='bg-primary mb-4'>
         {products.map((product) => (
@@ -22,7 +25,7 @@ return (
               <Image src={product.image} alt={product.name} fluid />
               <Carousel.Caption className='carousel-caption'>
                 <h2>
-                  {product.name} (${product.price})
+                  {product.name} {formatJPY(product.price)}
                 </h2>
               </Carousel.Caption>
             </Link>

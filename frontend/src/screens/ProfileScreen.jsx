@@ -9,6 +9,7 @@ import { FaTimes } from 'react-icons/fa';
 import { useProfileMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import { useGetMyOrdersQuery } from "../slices/ordersApiSlice";
+import { formatJPY } from "../utils/cartUtils";
 
 const ProfileScreen = () => {
   const [name, setName] = useState("");
@@ -131,7 +132,7 @@ return (
                             <tr key={order._id}>
                                 <td>{order._id}</td>
                                 <td>{order.createdAt.substring(0, 10)}</td>
-                                <td>${order.totalPrice}</td>
+                                <td>{formatJPY(order.totalPrice)}</td>
                                 <td>
                                     {order.isPaid ? (
                                         order.paidAt.substring(0, 10)

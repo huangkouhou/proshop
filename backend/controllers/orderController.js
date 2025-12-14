@@ -1,5 +1,7 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Order from '../models/orderModel.js';
+import PAYPAY from '@paypayopa/paypayopa-sdk-node';
+import { v4 as uuidv4 } from 'uuid';
 
 
 //@desc Create new order
@@ -127,6 +129,128 @@ const getOrders = asyncHandler(async(req, res) => {
 // });
 
 
+
+
+// 创建 PayPay 支付链接
+// @desc    Create PayPay payment link
+// @route   POST /api/orders/:id/paypay
+// @access  Private
+const createPayPayPayment = asyncHandler(async(req, res) => {
+    const order = await Order.findById(req.params.id);
+
+    if (order){
+        const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+        PAYPAY.Configure({
+            clientId: process.env.PAYPAY_API_KEY,
+            clientSecret: process.env.PAYPAY_API_SECRET,
+            merchantId: process.env.PAYPAY_MERCHANT_ID,
+            productionMode: false,// 测试环境必须是 false
+        });
+        const paymentId = uuidv4();//generate unique id
+
+        //先把这个 ID 存进数据库，状态设为 PENDING
+        order.paymentResult = {
+            id: paymentId,
+            status: 'PENDING',
+            update_time: Date.now(),
+            email_address: req.user.email,
+        };
+
+        await order.save();
+
+
+
+        const payload = {
+            merchantPaymentId: paymentId, // 这里的 ID 必须和存进数据库的一致
+            amount: {
+                    amount: Math.floor(order.totalPrice),
+                    currency: 'JPY',
+                },
+                codeType: 'ORDER_QR',
+                orderDescription: `Order ${order._id}`,
+                isAuthorization: false,
+                redirectUrl: `${baseUrl}/order/${order._id}`,
+                redirectType: 'WEB_LINK',
+                userAgent: req.get('User-Agent'),
+            };
+
+            // 调用 PayPay API
+            const response = await PAYPAY.QRCodeCreate(payload);
+
+            const responseBody = response.BODY || response.body;
+
+
+            // 把生成的跳转链接 (url) 发给前端
+            if (responseBody && responseBody.resultInfo && responseBody.resultInfo.code === 'SUCCESS') {
+                res.json({ url: responseBody.data.url });
+            } else {
+                res.status(500);
+                throw new Error('PayPay API Error: ' + response.body.resultInfo.message);
+            }
+        } else {
+            res.status(404);
+            throw new Error('Order not found');
+        }
+});
+
+
+
+// 核实 PayPay 订单状态的函数
+// @desc    Verify PayPay payment status
+// @route   GET /api/orders/:id/paypay/verify
+// @access  Private
+const verifyPayPayPayment = asyncHandler(async (req, res) => {
+
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+        res.status(404);
+        throw new Error('Order not found');
+    }
+    // 检查数据库里有没有 Payment ID
+    if (!order.paymentResult || !order.paymentResult.id) {
+        res.status(404);
+        throw new Error('No Payment initiated');
+    }
+
+// 配置 PayPay
+    PAYPAY.Configure({
+        clientId: process.env.PAYPAY_API_KEY,
+        clientSecret: process.env.PAYPAY_API_SECRET,
+        merchantId: process.env.PAYPAY_MERCHANT_ID,
+        productionMode: false,
+    });
+
+    // 拿着数据库里存的 ID 去问 PayPay
+    const paymentId = order.paymentResult.id;
+
+    const result = await PAYPAY.GetPaymentDetails([paymentId]);
+
+    // 检查 PayPay 返回的结果
+    if (result && result.BODY && result.BODY.data && result.BODY.data.status === 'COMPLETED'){
+
+        order.isPaid = true;
+        order.paidAt = Date.now();
+        order.paymentResult.status = 'COMPLETED';
+
+        const updatedOrder = await order.save();
+        res.json(updatedOrder);
+        
+    } else if (result?.BODY?.data?.status === 'CREATED') {
+        res.status(400).json({ message: 'Payment created but not completed' });
+    } else {
+        res.status(400).json({ message: 'Payment failed or not found '});
+    }
+
+});
+
+
+
+
+  
+
+
+
 export {
     addOrderItems,
     getMyOrders,
@@ -134,5 +258,7 @@ export {
     updateOrderToPaid,
     updateOrderToDelivered,
     getOrders,
+    createPayPayPayment,
+    verifyPayPayPayment,
 
 };
