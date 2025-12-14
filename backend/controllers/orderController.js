@@ -149,8 +149,20 @@ const createPayPayPayment = asyncHandler(async(req, res) => {
         });
         const paymentId = uuidv4();//generate unique id
 
+        //先把这个 ID 存进数据库，状态设为 PENDING
+        order.paymentResult = {
+            id: paymentId,
+            status: 'PENDING',
+            update_time: Date.now(),
+            email_address: req.user.email,
+        };
+
+        await order.save();
+
+
+
         const payload = {
-            merchantPaymentId: paymentId,
+            merchantPaymentId: paymentId, // 这里的 ID 必须和存进数据库的一致
             amount: {
                     amount: Math.floor(order.totalPrice),
                     currency: 'JPY',
@@ -180,8 +192,60 @@ const createPayPayPayment = asyncHandler(async(req, res) => {
             res.status(404);
             throw new Error('Order not found');
         }
+});
 
+
+
+// 核实 PayPay 订单状态的函数
+// @desc    Verify PayPay payment status
+// @route   GET /api/orders/:id/paypay/verify
+// @access  Private
+const verifyPayPayPayment = asyncHandler(async (req, res) => {
+    const order = await Order.getOrderById(req.params.id);
+    if (!order) {
+        res.status(404);
+        throw new Error('Order not found');
+    }
+
+    if (!order.paymentResult || !order.paymentResult.id) {
+        res.result(404);
+        throw new Error('No Payment initiated');
+    }
+
+    // 配置 PayPay (必须重新配置一次，因为它不在同一个函数作用域)
+    PAYPAY.Configure({
+        clientId: process.env.PAYPAY_API_KEY,
+        clientSecret: process.env.PAYPAY_API_SECRET,
+        merchantId: process.env.PAYPAY_MERCHANT_ID,
+        productionMode: process.env.NODE_ENV === 'production',
     });
+
+    // 拿着数据库里存的 ID 去问 PayPay
+    const paymentId = order.paymentResult.id;
+    const result = await PAYPAY.GetPaymentDetails([paymentId]);
+
+    // 检查 PayPay 返回的结果
+    if (result && result.BODY && result.BODY.data && result.BODY.data.status === 'COMPLETED'){
+
+        order.isPaid = true;
+        order.paidAt = Date.now();
+        order.paymentResult.status = 'COMPLETED';// 更新状态
+
+        const updatedOrder = await order.save();
+        res.json(updatedOrder);
+        
+    } else if (result.BODY.data.status === 'CREATED') {
+        res.status(400).json({ message: 'Payment created but not completed' });
+    } else {
+        res.status(400).json({ message: 'Payment failed or not found '});
+    }
+
+});
+
+
+
+
+  
 
 
 
@@ -193,5 +257,6 @@ export {
     updateOrderToDelivered,
     getOrders,
     createPayPayPayment,
+    verifyPayPayPayment,
 
 };

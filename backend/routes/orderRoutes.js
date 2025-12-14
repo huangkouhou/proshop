@@ -8,6 +8,7 @@ import {
     updateOrderToDelivered,
     getOrders,
     createPayPayPayment,
+    verifyPayPayPayment,
 } from "../controllers/orderController.js";
 import { protect, admin } from '../middleware/authMiddleware.js';
 
@@ -20,6 +21,7 @@ router.route('/:id').get(protect, getOrderById);
 router.route('/:id/pay').put(protect, updateOrderToPaid);
 router.route('/:id/deliver').put(protect, admin, updateOrderToDelivered);
 router.route('/:id/paypay').post(protect, createPayPayPayment);
+router.route('/:id/paypay/verify').get(protect, verifyPayPayPayment);
 
 
 

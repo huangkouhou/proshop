@@ -4,6 +4,7 @@ import { ORDER_URL, PAYPAL_URL } from "../constants";
 
 
 
+
 export const ordersApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         createOrder: builder.mutation({
@@ -64,6 +65,16 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
+        verifyPayPayPayment: builder.query({
+            query: (orderId) => ({
+                url: `${ORDER_URL}/${orderId}/paypay/verify`,
+                method: 'GET',
+            }),
+        }),
+
+
+
+
     }),
 });
 
@@ -76,6 +87,7 @@ export const {
     useGetOrdersQuery,
     useDeliverOrderMutation,
     useCreatePayPayPaymentMutation,
+    useVerifyPayPayPaymentQuery,
 } = ordersApiSlice;
 
 

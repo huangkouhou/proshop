@@ -13,6 +13,7 @@ import {
     useGetPayPalClientIdQuery,
     useDeliverOrderMutation, 
     useCreatePayPayPaymentMutation,
+    useVerifyPayPayPaymentQuery,
 } from '../slices/ordersApiSlice';
 
 
@@ -37,6 +38,20 @@ const OrderScreen = () => {
 
   //initiate PayPay Mutation
   const [createPayPayPayment, { isLoading: loadingPayPay }] = useCreatePayPayPaymentMutation();
+
+  // 只有当订单存在且未支付时，才启用这个查询
+  // skip: true 表示不执行查询。如果是已支付状态，就不用查了。
+  const { data: verifyResult } =
+  useVerifyPayPayPaymentQuery(orderId, {
+      skip: !order || order.isPaid,
+  });
+
+  useEffect(() => {
+  if (verifyResult?.isPaid) {
+      refetch(); // 订单详情的 refetch
+      toast.success('Payment Verified!');
+  }
+  }, [verifyResult, refetch]);
 
 
   //从后端获取 PayPal 的 client-id 的 RTK Query 请求。
