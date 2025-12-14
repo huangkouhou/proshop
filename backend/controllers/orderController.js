@@ -201,18 +201,19 @@ const createPayPayPayment = asyncHandler(async(req, res) => {
 // @route   GET /api/orders/:id/paypay/verify
 // @access  Private
 const verifyPayPayPayment = asyncHandler(async (req, res) => {
-    const order = await Order.getOrderById(req.params.id);
+
+    const order = await Order.findById(req.params.id);
     if (!order) {
         res.status(404);
         throw new Error('Order not found');
     }
-
+    // 检查数据库里有没有 Payment ID
     if (!order.paymentResult || !order.paymentResult.id) {
-        res.result(404);
+        res.status(404);
         throw new Error('No Payment initiated');
     }
 
-    // 配置 PayPay (必须重新配置一次，因为它不在同一个函数作用域)
+// 配置 PayPay
     PAYPAY.Configure({
         clientId: process.env.PAYPAY_API_KEY,
         clientSecret: process.env.PAYPAY_API_SECRET,
@@ -222,6 +223,7 @@ const verifyPayPayPayment = asyncHandler(async (req, res) => {
 
     // 拿着数据库里存的 ID 去问 PayPay
     const paymentId = order.paymentResult.id;
+
     const result = await PAYPAY.GetPaymentDetails([paymentId]);
 
     // 检查 PayPay 返回的结果
@@ -229,12 +231,12 @@ const verifyPayPayPayment = asyncHandler(async (req, res) => {
 
         order.isPaid = true;
         order.paidAt = Date.now();
-        order.paymentResult.status = 'COMPLETED';// 更新状态
+        order.paymentResult.status = 'COMPLETED';
 
         const updatedOrder = await order.save();
         res.json(updatedOrder);
         
-    } else if (result.BODY.data.status === 'CREATED') {
+    } else if (result?.BODY?.data?.status === 'CREATED') {
         res.status(400).json({ message: 'Payment created but not completed' });
     } else {
         res.status(400).json({ message: 'Payment failed or not found '});
