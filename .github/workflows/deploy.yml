@@ -1,8 +1,8 @@
-name: Deploy to EC2
+name: Deploy to OCI Compute
 
 on:
   push:
-    branches: ["main" ]
+    branches: ["oci-migration" ]
     paths-ignore:
       - 'README.md'
       - '**/README.md'
@@ -41,6 +41,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # OCI: 配置 QEMU 和 Buildx 以支持 ARM 架构交叉编译
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -53,9 +57,11 @@ jobs:
         with:
           context: ./backend
           push: true
+          platforms: linux/arm64 # 极其关键！专为 OCI ARM 实例打包
           tags: ${{ secrets.DOCKER_USERNAME }}/my-node-app:latest
 
       # --- 2. 构建并推送 前端+Caddy ---
+      # 🚀 OCI：在构建前端时，同样指定 platforms 为 linux/arm64
       - name: Prepare Caddyfile for Build
         # 小技巧：把根目录的 Caddyfile 复制到 client 目录下
         # 这样 Docker 构建 client 时就能读到它了
@@ -66,15 +72,16 @@ jobs:
         with:
           context: ./frontend
           push: true
+          platforms: linux/arm64
           tags: ${{ secrets.DOCKER_USERNAME }}/my-react-caddy:latest
 
 # --- 新增步骤：把 docker-compose.yml 拷贝到服务器 ---
-      - name: Copy docker-compose.yml to EC2
+      - name: Copy docker-compose.yml to OCI
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.OCI_HOST }}
           username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.OCI_SSH_KEY }}
           source: "docker-compose.yml"
           target: "my-project" 
 
@@ -82,9 +89,9 @@ jobs:
       - name: SSH Deploy
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.OCI_HOST }}
           username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.OCI_SSH_KEY }}
           script: |
             # 1. 准备目录
             mkdir -p my-project
