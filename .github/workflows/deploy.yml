@@ -85,22 +85,21 @@ jobs:
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.OCI_HOST }}
-          username: opc
+          username: ${{ secrets.OCI_USERNAME }}
           key: ${{ secrets.OCI_SSH_KEY }}
           source: "docker-compose.yml"
-          target: "my-project" 
+          target: "/home/opc/proshop"
 
       # --- 3. 部署到 OCI ---
       - name: SSH Deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.OCI_HOST }}
-          username: opc
+          username: ${{ secrets.OCI_USERNAME }}
           key: ${{ secrets.OCI_SSH_KEY }}
           script: |
             # 1. 准备目录
-            mkdir -p my-project
-            cd my-project
+            cd /home/opc/proshop
             
             # 2. 生成 docker-compose.yml (我们可以直接用 echo 写入最新配置)
             # 这里为了简单，假设你已经第一次手动上传了 docker-compose.yml
