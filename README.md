@@ -7,7 +7,7 @@
 
 > A full-stack eCommerce application built with the **MERN stack**, fully containerized with **Docker**, and deployed on **AWS EC2** with a robust **CI/CD pipeline**.
 
-🔗 **Live Demo:** [https://penghuang.dev](https://penghuang.dev)
+🔗 **Live Demo:** [https://proshop.penghuang.dev](https://proshop.penghuang.dev)
 
 ---
 
@@ -102,4 +102,4 @@ PAYPAL_CLIENT_ID=<your_paypal_id>
 PAYPAY_API_KEY=<your_key>
 PAYPAY_API_SECRET=<your_secret>
 PAYPAY_MERCHANT_ID=<your_id>
-FRONTEND_URL=https://penghuang.dev
+FRONTEND_URL=https://proshop.penghuang.dev
