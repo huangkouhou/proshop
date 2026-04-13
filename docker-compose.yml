@@ -21,10 +21,6 @@ services:
     restart: always
     depends_on:
       - backend
-    # 把证书数据挂载出来 👇👇👇
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
     deploy:
       resources:
         limits:
@@ -35,7 +31,3 @@ services:
 networks:
   app-net:
     driver: bridge
-
-volumes:
-  caddy_data:
-  caddy_config:
