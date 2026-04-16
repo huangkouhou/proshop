@@ -2,10 +2,10 @@
 
 ![CI/CD Status](https://github.com/huangkouhou/proshop/actions/workflows/deploy.yml/badge.svg)
 ![Docker](https://img.shields.io/badge/Docker-Enabled-blue.svg)
-![AWS](https://img.shields.io/badge/Deployed%20on-AWS%20EC2-orange.svg)
+![Cloud](https://img.shields.io/badge/deployment-Oracle_Cloud-orange)
 
 
-> A full-stack eCommerce application built with the **MERN stack**, fully containerized with **Docker**, and deployed on **AWS EC2** with a robust **CI/CD pipeline**.
+> A full-stack eCommerce application built with the **MERN stack**, fully containerized with **Docker**, and deployed on **OCI** with a robust **CI/CD pipeline**.
 
 🔗 **Live Demo:** [https://proshop.penghuang.dev](https://proshop.penghuang.dev)
 
